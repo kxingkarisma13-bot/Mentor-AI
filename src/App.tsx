@@ -25,6 +25,7 @@ import EmergencyAlert from "./pages/EmergencyAlert";
 import SafetyMonitoring from "./pages/SafetyMonitoring";
 import VoiceSettings from "./pages/VoiceSettings";
 import NotFound from "./pages/NotFound";
+import ShakeEmergencyBridge from "@/components/ShakeEmergencyBridge";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <ShakeEmergencyBridge />
         <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
