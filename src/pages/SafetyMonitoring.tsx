@@ -284,3 +284,5 @@ const SafetyMonitoring = () => {
 
 export default SafetyMonitoring;
 
+
+
