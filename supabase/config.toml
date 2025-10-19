@@ -1,0 +1,7 @@
+project_id = "ieasccxglpcxviodwbcu"
+
+[functions.mentor-chat]
+verify_jwt = true
+
+[functions.create-consultation-payment]
+verify_jwt = true
