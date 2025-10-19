@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Brain, Send, ArrowLeft, Loader2, Mic, Volume2, VolumeX, Shield, DollarSign, Heart, Dumbbell, GraduationCap, User, Sparkles, Phone, AlertTriangle, MicIcon, VolumeX as AlarmIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { VoiceRecognition, VoiceSynthesis, VoiceActivation, EmergencyShakeDetector, EmergencyAlarm, EnhancedVoiceRecognitionWrapper } from "@/utils/voiceUtils";
+import { PERSONAS, DEFAULT_PERSONA_KEY, type PersonaKey } from "@/utils/personas";
 import { EmergencyService, EMERGENCY_MESSAGES, EmergencyAlertSystem, EMERGENCY_ALERT_TEMPLATES } from "@/utils/emergencyUtils";
 import { SafetyMonitoringAssistant } from "@/utils/safetyMonitor";
 import { 
@@ -43,6 +44,10 @@ const Chat = () => {
   const [isActivated, setIsActivated] = useState(false);
   const [emergencyMode, setEmergencyMode] = useState(false);
   const [alarmPlaying, setAlarmPlaying] = useState(false);
+  const [persona, setPersona] = useState<PersonaKey>(() => {
+    const saved = localStorage.getItem("mentor-persona") as PersonaKey | null;
+    return saved && PERSONAS[saved] ? saved : DEFAULT_PERSONA_KEY;
+  });
   const [userName, setUserName] = useState("");
   const [showQuickActions, setShowQuickActions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -191,7 +196,8 @@ const Chat = () => {
       const { data, error } = await supabase.functions.invoke('mentor-chat', {
         body: { 
           messages: [...messages, { role: 'user', content: sanitizedMessage }],
-          language: language
+          language: language,
+          persona: PERSONAS[persona]
         }
       });
 
@@ -464,7 +470,8 @@ const Chat = () => {
       const { data, error } = await supabase.functions.invoke('mentor-chat', {
         body: { 
           messages: [...messages, { role: 'user', content: sanitizedMessage }],
-          language: language
+          language: language,
+          persona: PERSONAS[persona]
         }
       });
 
@@ -527,7 +534,26 @@ const Chat = () => {
             </div>
           </div>
           
-          <div className="ml-auto flex gap-2">
+          <div className="ml-auto flex gap-2 items-center">
+            <select
+              value={persona}
+              onChange={(e) => {
+                const key = e.target.value as PersonaKey;
+                setPersona(key);
+                localStorage.setItem("mentor-persona", key);
+                toast({
+                  title: `${PERSONAS[key].emoji} ${PERSONAS[key].displayName}`,
+                  description: `Persona set: ${PERSONAS[key].shortTagline}`,
+                });
+              }}
+              className="text-sm border rounded-md px-2 py-1"
+            >
+              {Object.values(PERSONAS).map((p) => (
+                <option key={p.key} value={p.key}>
+                  {p.emoji} {p.displayName}
+                </option>
+              ))}
+            </select>
             <Button 
               variant="outline" 
               size="sm" 
